@@ -1,9 +1,10 @@
-import { X } from "lucide-react";
+import { ArrowLeftRight, X } from "lucide-react";
 import { useProduct } from "../store/productState";
 import { useState } from "react";
 import { Table } from "antd";
 import { columns } from "../libs/columns";
 import { ProductProps } from "./Product";
+import toast from "react-hot-toast";
 
 export const Compare = () => {
   const { compareProducts, removeProduct, products, addProduct } = useProduct();
@@ -15,11 +16,17 @@ export const Compare = () => {
 
   const handleCompare = (product: ProductProps) => {
     if (compareProducts.length >= 4) {
-      alert("Not more than 4 allowed");
+      toast.error("Max 4 Products allowed!");
       return;
     }
     addProduct(product);
+    toast.success("Added Product successfully");
     setOpenModel(false);
+  };
+
+  const handleRemoveProduct = (id: number) => {
+    removeProduct(id);
+    toast.success("Removed product successfully");
   };
 
   const tableData = products.map((product) => ({
@@ -31,8 +38,10 @@ export const Compare = () => {
           src={product.images[0]}
         />
         <span>
-          <h1 className="font-semibold">{product.title}</h1>
-          <p className="text-gray-700/80">{product.description}</p>
+          <h1 className="font-semibold md:block hidden">{product.title}</h1>
+          <p className="text-gray-700/80 md:block hidden">
+            {product.description.slice(0, 50)}
+          </p>
         </span>
       </div>,
     ],
@@ -68,7 +77,7 @@ export const Compare = () => {
         <div className="flex justify-end p-4">
           <button
             onClick={handleOpenModel}
-            className="p-2 bg-blue-500 text-white rounded-lg cursor-pointer shadow-lg hover:bg-blue-700"
+            className="p-2 bg-blue-500 text-white rounded-lg cursor-pointer shadow-lg hover:bg-blue-700 font-semibold"
           >
             Compare Products
           </button>
@@ -76,48 +85,79 @@ export const Compare = () => {
         {openModel && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-10">
             <div className="fixed inset-0 flex justify-center items-center">
-              <div className="p-5 bg-white rounded-xl shadow-xl">
+              <div className="p-5 bg-white rounded-xl shadow-xl max-w-4xl w-[90vw] max-h-[80vh] overflow-auto">
                 <div className="flex justify-end">
                   <button
                     onClick={handleOpenModel}
-                    className="px-1 py-1 bg-blue-500 text-white rounded-lg cursor-pointer shadow-lg"
+                    className="px-1 py-1 my-3 bg-blue-500 text-white rounded-lg cursor-pointer shadow-lg"
                   >
                     <X />
                   </button>
                 </div>
-                <Table
-                  pagination={{ pageSize: 5 }}
-                  dataSource={tableData}
-                  columns={columns}
-                />
+                <div className="overflow-x-auto">
+                  <Table
+                    pagination={{ pageSize: 3 }}
+                    dataSource={tableData}
+                    columns={columns}
+                    scroll={{ x: true }}
+                  />
+                </div>
               </div>
             </div>
           </div>
         )}
 
-        <div className="md:flex grid grid-cols-2 gap-4 p-4 max-w-7xl x-auto">
-          {compareProducts.map((product) => (
-            <div
-              key={product.id}
-              className="relative border border-black/15 rounded-lg shadow-xl w-full"
-            >
-              <img
-                src={product.images[0]}
-                alt={product.title}
-                className="w-full h-40 object-contain mb-4 bg-slate-500"
-              />
-              <div className="px-4 pt-2 pb-4">
-                <h2 className="font-semibold">{product.title}</h2>
-                <p className="text-gray-600">${product.price}</p>
-              </div>
-              <button
-                onClick={() => removeProduct(product.id)}
-                className="absolute top-0 right-2 mt-2 px-1 py-1 border border-white/20 rounded-md text-white hover:bg-black/50 cursor-pointer"
+        <div
+          className={`flex gap-4 px-2 max-w-7xl mx-auto ${
+            compareProducts.length > 0 ? "grid grid-cols-2 md:flex" : ""
+          }`}
+        >
+          {compareProducts.length > 0 ? (
+            compareProducts.map((product) => (
+              <div
+                key={product.id}
+                className="relative border border-black/15 rounded-lg shadow-xl w-full"
               >
-                <X />
-              </button>
+                <img
+                  src={product.images[0]}
+                  alt={product.title}
+                  className="w-full h-40 object-contain mb-4 bg-slate-500 rounded-t-lg"
+                />
+                <div className="px-4 pt-2 pb-4">
+                  <h1 className="font-semibold">{product.title}</h1>
+                  <h2 className="text-gray-600 tracking-tighter">
+                    {product.brand}
+                  </h2>
+                  <p className="text-gray-600">${product.price}</p>
+                  <div className="flex items-center mt-2 gap-2">
+                    <div className="text-center rounded-xl px-2 bg-green-300/50 text-sm">
+                      {product.discountPercentage}%
+                    </div>
+                    <div className="text-center rounded-xl bg-slate-500 text-white text-sm px-2 font-semibold">
+                      {product.category}
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => handleRemoveProduct(product.id)}
+                  className="absolute top-0 right-2 mt-2 px-1 py-1 border border-white/20 rounded-md text-white hover:bg-black/50 cursor-pointer"
+                >
+                  <X />
+                </button>
+              </div>
+            ))
+          ) : (
+            <div className="flex flex-col justify-center items-center w-full p-8 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 gap-4">
+              <ArrowLeftRight className="w-12 h-12 text-gray-400" />
+              <h1 className="text-2xl font-medium text-gray-500">
+                Select products to compare
+              </h1>
+              <p className="text-gray-400 text-center mt-4">
+                Choose up to 4 products to see detailed comparisons
+              </p>
             </div>
-          ))}
+          )}
         </div>
       </div>
     </>

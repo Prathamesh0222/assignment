@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Table } from "antd";
 import { ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +24,7 @@ export const Product = () => {
   const [filterDialog, setFilterDialog] = useState<boolean>(false);
   const navigate = useNavigate();
   const { addProduct, compareProducts } = useProduct();
+  const filterRef = useRef<HTMLDivElement>(null);
 
   const categories: string[] = [];
   products.forEach((product) => {
@@ -34,6 +35,7 @@ export const Product = () => {
 
   const handleFilter = (category: string) => {
     setFilter(category);
+    setFilterDialog(false);
   };
 
   const handleDialog = () => {
@@ -49,6 +51,21 @@ export const Product = () => {
     navigate("/compare");
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        filterRef.current &&
+        !filterRef.current.contains(event.target as Node)
+      ) {
+        setFilterDialog(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [filterDialog]);
+
   const filterData = filter
     ? products.filter((product) => product.category === filter)
     : products;
@@ -63,7 +80,9 @@ export const Product = () => {
         />
         <span>
           <h1 className="font-semibold">{product.title}</h1>
-          <p className="text-gray-700/80">{product.description}</p>
+          <p className="text-gray-700/80 md:line-clamp-2">
+            {product.description}
+          </p>
         </span>
       </div>,
     ],
@@ -85,7 +104,7 @@ export const Product = () => {
     compare: (
       <button
         onClick={() => handleCompare(product)}
-        className="px-2 py-1 bg-blue-500 rounded-md text-white hover:bg-blue-700 cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed"
+        className="px-2 py-1 bg-blue-500 rounded-md text-white hover:bg-blue-700 cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed font-semibold"
         disabled={compareProducts.some((p) => p.id === product.id)}
       >
         Compare
@@ -98,7 +117,7 @@ export const Product = () => {
       <div className="mb-4">
         <button
           onClick={handleDialog}
-          className="block md:hidden border px-4 py-1 rounded-md"
+          className="block md:hidden border border-black/20 px-4 py-1 rounded-md hover:bg-gray-200"
         >
           <span className="flex gap-1 items-center">
             <ChevronDown className="w-5 h-5" />
@@ -106,7 +125,10 @@ export const Product = () => {
           </span>
         </button>
         {filterDialog && (
-          <div className="absolute mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-10">
+          <div
+            ref={filterRef}
+            className="absolute mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-10"
+          >
             <div className="flex flex-col space-y-2">
               <button
                 onClick={() => handleFilter("")}
@@ -134,25 +156,39 @@ export const Product = () => {
       <Table
         className="border rounded-xl border-black/20 hidden md:block"
         dataSource={tableData}
-        pagination={{ defaultPageSize: 5, position: ["bottomCenter"] }}
+        pagination={{ defaultPageSize: 4, position: ["bottomCenter"] }}
         columns={columns}
       />
       <div className="grid grid-cols-2 gap-2 md:hidden">
         {filterData.map((product) => (
           <div
-            className="border border-black/20 rounded-lg"
+            className="border border-black/20 rounded-lg flex flex-col h-full"
             key={product.title}
           >
             <img
               className="bg-slate-500 object-cover h-40 w-full rounded-t-lg"
               src={`${product.images[0]}`}
             />
-            <div className="p-2 text-sm">
+            <div className="p-2 text-sm flex flex-col flex-grow">
               <h1 className="font-semibold text-gray-700/80">
                 {product.title}
               </h1>
-              <p className="font-semibold">{product.brand}</p>
-              <p className="mt-1">${product.price}</p>
+              <p className="font-semibold">{product.brand || "-"}</p>
+              <div className="flex items-center my-2 gap-2">
+                <p className="text-gray-500">${product.price}</p>
+                <div className="text-center rounded-xl px-1 bg-green-300/50 text-sm">
+                  {product.discountPercentage}%
+                </div>
+              </div>
+              <div className="mt-auto">
+                <button
+                  onClick={() => handleCompare(product)}
+                  className="px-2 py-1 bg-blue-500 rounded-md text-white hover:bg-blue-700 cursor-pointer w-full disabled:bg-gray-400 disabled:cursor-not-allowed font-semibold"
+                  disabled={compareProducts.some((p) => p.id === product.id)}
+                >
+                  Compare
+                </button>
+              </div>
             </div>
           </div>
         ))}

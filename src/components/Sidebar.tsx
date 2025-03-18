@@ -61,7 +61,7 @@ export const Sidebar = () => {
                     : "hover:bg-slate-500/50 cursor-pointer"
                 }`}
               >
-                <span className="flex items-center gap-2 whitespace-nowrap">
+                <span className="flex items-center gap-2 whitespace-nowrap  ">
                   <ArrowLeftRight className="w-5 h-5" />
                   Compare Products
                 </span>

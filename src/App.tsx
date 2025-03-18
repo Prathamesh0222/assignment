@@ -4,8 +4,24 @@ import { Navbar } from "./components/Navbar";
 import { Product } from "./components/Product";
 import { Sidebar } from "./components/Sidebar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Loader } from "./components/Loader";
 
 function App() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
     <div>
       <BrowserRouter>

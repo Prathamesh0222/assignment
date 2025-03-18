@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast";
 import { Compare } from "./components/Compare";
 import { Navbar } from "./components/Navbar";
 import { Product } from "./components/Product";
@@ -20,6 +21,7 @@ function App() {
             </div>
           </div>
         </div>
+        <Toaster />
       </BrowserRouter>
     </div>
   );

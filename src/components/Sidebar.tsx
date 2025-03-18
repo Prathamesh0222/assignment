@@ -25,15 +25,15 @@ export const Sidebar = () => {
       <div
         className={
           isSidebarOpen
-            ? "md:max-w-[250px] md:w-full md:relative md:border-0 md:border-r md:min-h-screen md:block hidden md:ease-in-out md:duration-300 md:transition-all"
-            : "md:max-w-[60px] md:w-full md:border-r md:h-screen md:border-0  md:relative md:block hidden md:ease-in-out md:duration-300 md:transition-all"
+            ? "md:max-w-[250px] md:w-full md:relative md:border-0 md:border-r md:border-black/20 md:min-h-screen h-screen md:block hidden md:ease-in-out md:duration-300 md:transition-all bg-gray-50"
+            : "md:max-w-[60px] md:w-full md:border-r md:h-screen md:border-0 md:border-black/20 md:relative md:block hidden md:ease-in-out md:duration-300 md:transition-all bg-gray-50"
         }
       >
         {isSidebarOpen ? (
           <div>
             <div className="flex justify-end p-3">
               <button
-                className="md:block hidden hover:bg-black/20 rounded-xl p-2 border cursor-pointer"
+                className="md:block hidden hover:bg-black/20 rounded-xl p-2 border border-black/20 cursor-pointer"
                 onClick={() => handleSidebar()}
               >
                 <ChevronLeft className="w-4 h-4" />
@@ -71,7 +71,7 @@ export const Sidebar = () => {
         ) : (
           <div className="flex flex-col gap-6 justify-center items-center p-4">
             <button
-              className="md:block hidden hover:bg-black/20 rounded-xl p-2 border cursor-pointer"
+              className="md:block hidden hover:bg-black/20 rounded-xl p-2 border border-black/20 cursor-pointer"
               onClick={() => handleSidebar()}
             >
               <ChevronRight className="w-4 h-4" />
@@ -99,7 +99,7 @@ export const Sidebar = () => {
           </div>
         )}
       </div>
-      <div className="h-[60px] flex fixed bottom-0 border-t md:hidden w-full p-2 items-center gap-2 bg-white">
+      <div className="h-[60px] flex fixed bottom-0 border-t border-black/20 md:hidden w-full p-2 items-center gap-2 bg-white z-10">
         <button
           onClick={() => handleNavigation("/")}
           className={`p-2 rounded-lg w-full ${

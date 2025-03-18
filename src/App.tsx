@@ -1,3 +1,4 @@
+import { Compare } from "./components/Compare";
 import { Navbar } from "./components/Navbar";
 import { Product } from "./components/Product";
 import { Sidebar } from "./components/Sidebar";
@@ -14,7 +15,7 @@ function App() {
             <div className="md:pt-0 pt-16 pb-16">
               <Routes>
                 <Route path="/" element={<Product />} />
-                <Route path="/compare" />
+                <Route path="/compare" element={<Compare />} />
               </Routes>
             </div>
           </div>

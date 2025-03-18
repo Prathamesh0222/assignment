@@ -1,9 +1,13 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Table } from "antd";
 import { ChevronDown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useProduct } from "../store/productState";
+import { useFetchProduct } from "../hooks/useFetchProduct";
+import { columns } from "../libs/columns";
 
-interface ProductProps {
+export interface ProductProps {
+  id: number;
   title: string;
   description: string;
   price: number;
@@ -13,59 +17,13 @@ interface ProductProps {
   category: string;
 }
 
-const columns = [
-  {
-    title: "Product",
-    dataIndex: "product",
-    key: "product",
-  },
-  {
-    title: "Brand",
-    dataIndex: "brand",
-    key: "brand",
-  },
-  {
-    title: "Price",
-    dataIndex: "price",
-    key: "price",
-    sorter: {
-      compare: (a: any, b: any) => a.originalPrice - b.originalPrice,
-      render: (record: any) => <p>${record.originalPrice}</p>,
-    },
-  },
-  {
-    title: "Discount",
-    dataIndex: "discount",
-    key: "discount",
-    sorter: {
-      compare: (a: any, b: any) => a.originalDiscount - b.originalDiscount,
-      render: (record: any) => <p>${record.originalDiscount}</p>,
-    },
-  },
-
-  {
-    title: "Category",
-    dataIndex: "category",
-    key: "category",
-  },
-];
-
 export const Product = () => {
-  const [products, setProducts] = useState<ProductProps[]>([]);
+  useFetchProduct();
+  const { products } = useProduct();
   const [filter, setFilter] = useState<string>("");
   const [filterDialog, setFilterDialog] = useState<boolean>(false);
-
-  useEffect(() => {
-    try {
-      const fetchProduct = async () => {
-        const response = await axios.get("https://dummyjson.com/products");
-        setProducts(response.data.products);
-      };
-      fetchProduct();
-    } catch (error) {
-      console.error("Error while fetching data", error);
-    }
-  }, []);
+  const navigate = useNavigate();
+  const { addProduct, compareProducts } = useProduct();
 
   const categories: string[] = [];
   products.forEach((product) => {
@@ -82,6 +40,15 @@ export const Product = () => {
     setFilterDialog(!filterDialog);
   };
 
+  const handleCompare = (product: ProductProps) => {
+    if (compareProducts.length >= 4) {
+      alert("Not more than 4 allowed");
+      return;
+    }
+    addProduct(product);
+    navigate("/compare");
+  };
+
   const filterData = filter
     ? products.filter((product) => product.category === filter)
     : products;
@@ -92,7 +59,7 @@ export const Product = () => {
       <div className="flex items-center gap-4">
         <img
           className="object-cover bg-slate-500 w-full max-w-20 h-20"
-          src={`${product.images[0]}`}
+          src={product.images[0]}
         />
         <span>
           <h1 className="font-semibold">{product.title}</h1>
@@ -114,6 +81,15 @@ export const Product = () => {
       <div className="text-center rounded-xl bg-slate-500 text-white px-2">
         {product.category}
       </div>
+    ),
+    compare: (
+      <button
+        onClick={() => handleCompare(product)}
+        className="px-2 py-1 bg-blue-500 rounded-md text-white hover:bg-blue-700 cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed"
+        disabled={compareProducts.some((p) => p.id === product.id)}
+      >
+        Compare
+      </button>
     ),
   }));
 

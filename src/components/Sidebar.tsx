@@ -25,14 +25,13 @@ export const Sidebar = () => {
       <div
         className={
           isSidebarOpen
-            ? "md:max-w-[250px] md:w-full md:relative md:border-0 md:border-r md:h-screen md:block hidden md:ease-in-out md:duration-300 md:transition-all"
+            ? "md:max-w-[250px] md:w-full md:relative md:border-0 md:border-r md:min-h-screen md:block hidden md:ease-in-out md:duration-300 md:transition-all"
             : "md:max-w-[60px] md:w-full md:border-r md:h-screen md:border-0  md:relative md:block hidden md:ease-in-out md:duration-300 md:transition-all"
         }
       >
         {isSidebarOpen ? (
           <div>
-            <div className="flex justify-between p-3">
-              <h1>Product</h1>
+            <div className="flex justify-end p-3">
               <button
                 className="md:block hidden hover:bg-black/20 rounded-xl p-2 border cursor-pointer"
                 onClick={() => handleSidebar()}
